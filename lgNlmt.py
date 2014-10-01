@@ -439,8 +439,8 @@ while sun < SUN+1:
             
             
     st = str(N)
-    WNR.wnr('su'+st+'.dat',[x,y]).writer()
-    WNR.wnr(data_dir +'su'+st+'.dat',[x,y]).writer()
+    WNR.wnr('su'+st+'.dat',[x,y,y_error]).writer()
+    WNR.wnr(data_dir +'su'+st+'.dat',[x,y,y_error]).writer()
     
     sun = sun+1
 
