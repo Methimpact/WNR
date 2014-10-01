@@ -362,15 +362,31 @@ class Calculate(object):
        
                     return chit1,chit2   
        
-     
+def Mean_Error(stor_w11):
+        nt = len(stor_w11)
+        ver = [0.0 for k in range(nt)] 
+        mw11 = 0.0
+         
+        for k in range (nt):
+            mw11 = mw11+stor_w11[k]/float(nt)
+        for l in range (nt):
+            ver[l] = (stor_w11[l]-mw11)**2
+        s_error = math.sqrt(sum(ver)/nt**2)
+        return  mw11, s_error
+            
+                    
+                            
+                                    
+                                                    
 
 ###################################################################
 #Declerations------------------------
-SUN = 3
-Nmax = 3#16
+# Input = [SUN: 10,Nmax: 16,l: 30, itr:100,sct:20,dlamda:0.25]
+SUN = 10
+Nmax = 16
 l = 30
-itr = 5
-sct = 2
+itr = 100
+sct = 20
 tct = itr-sct
 #------------------------------------------
 dlamda = 0.25
@@ -383,36 +399,45 @@ while sun < SUN+1:
     Nvalue = 1
     x = [0.0 for k in range(Nmax)]
     y = [0.0 for k in range(Nmax)]
+    y_error = [0.0 for k in range(Nmax)]
     while Nvalue < Nmax+1:
             lamda = dlamda*Nvalue
             alpha = (N**2)/lamda
-            U = Start(l,N).cold_start()
+            xx =  (N*N)/alpha 
+            stor_w11 = [0.0 for k in range(itr-sct)]
+            
             ll = 1
-            sw11 = 0.0
+            U = Start(l,N).cold_start()
             while (ll < itr+1): 
                     print sun,Nvalue,ll
                     for s in range(l):
                         for t in range(l):
                             for r in range(2):
                                 U = Update(U,l,N).link(r,s,t,alpha)
-                           
                     w11 = Calculate(U,l,N).wloop11(15,15)
                     if ll > sct:
-                        sw11 = sw11 + w11/float(tct)
+                        stor_w11[ll-sct-1] = w11
                     ll = ll+1
-                                
-            xx =  (N*N)/alpha        
+                    
+            yy,yser = Mean_Error(stor_w11)                   
+            
+                   
             x[Nvalue-1] = xx
-            y[Nvalue-1] =  sw11
-     
+            y[Nvalue-1] = yy
+            y_error[Nvalue-1] = yser
+            
             plt.figure(1)
-            plt.scatter(xx,sw11)
+            plt.scatter(xx,yy)
             plt.xlabel('lambda')
             plt.ylabel('W11')
             plt.grid()
+            plt.errorbar(xx,yy, yerr = yser,fmt='8')
             plt.savefig(plot_dir + 'plot01.png')
             plt.show()
+            
             Nvalue = Nvalue+1
+            
+            
     st = str(N)
     WNR.wnr('su'+st+'.dat',[x,y]).writer()
     WNR.wnr(data_dir +'su'+st+'.dat',[x,y]).writer()
