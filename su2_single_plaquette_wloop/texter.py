@@ -252,6 +252,31 @@ class Calculate(object):
                     UP = np.dot(D[0],np.dot(D[1],np.dot(D[2],D[3])))
                     wtr =  (1.0/float(2))*np.trace(UP).real
                     return wtr 
+                    
+                    
+                    
+            def wilsonlp(self,K):
+                    I = np.matrix(np.identity(2))
+                    WKK = np.matrix(np.identity(2))
+                    PD = [[I for k in range(K)]for p in range(4)]
+                    DD = [I for k in range(4)]
+                    for s  in range(K):
+                        PD[0][s] = np.matrix(self.U[0][0][s])
+                    for s in range(K):
+                        PD[1][s] = np.matrix(self.U[1][K][s])
+                    for s in range(K):
+                        t = K-s-1
+                        PD[2][s] = np.matrix(self.U[0][K][t]).getH()
+                    for s in range(K):
+                        x = K-s-1
+                        PD[3][s] = np.matrix(self.U[1][0][x]).getH()
+                    for r in range(4):
+                        for k in range(K):
+                            DD[r] = np.dot(DD[r],PD[r][k])
+                    WKK = np.dot(DD[0],np.dot(DD[1],np.dot(DD[2],DD[3])))
+                    wilp =  (1.0/float(2))*np.trace(WKK).real    
+                    return wilp    
+         
 
 class wnr(object):
     
@@ -334,7 +359,7 @@ def export_wstor(l,ct,titr,beta,flip):
                            U = Update(U,l).link(r,s,t,beta,flip)
   
                 if ll > sitr:
-                        wtr = Calculate(U,l).wloop11(15,15)
+                        wtr = Calculate(U,l).wilsonlp(2)
                         rt = ll- sitr-1
                         wstor[rt] = wtr
                 ll = ll+1 
@@ -372,11 +397,11 @@ def errorbar(l,titr,tdt,flip):
 ############################################################################           
 l = 30
 tdt = 30
-titr = 100
-flip = 1.0
+titr = 500
+flip = 0.5
 #------------------------------------------
-#errorbar(l,titr,tdt,flip)
-thermalization(l,titr,8.0,flip)
+errorbar(l,titr,tdt,flip)
+#thermalization(l,titr,8.0,flip)
 
 
 
