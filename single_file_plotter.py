@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Nov 18 11:27:13 2014
+
+@author: dibakarsigdel
+"""
+
 
 
 import numpy as np
@@ -29,6 +36,23 @@ class wnr(object):
 
 
 
+def fx(x):
+    if x > 2 or x == 2:
+        fnx = 1/x
+    elif x < 2:
+        fnx = 1-x/4.0
+    return fnx
+    
+def databox(N): 
+        xx = []
+        yy = []
+        for k in range (N):
+            xt = 0.025*k
+            yt = fx(xt)
+            xx.append(xt)
+            yy.append(yt)
+        return  xx,yy
+    
 
 
 
@@ -42,16 +66,15 @@ x = [0.0 for k in range(30)]
 y = [0.0 for k in range(30)]
 er = [0.0 for k in range(30)]
 ver = [x,y,er]
-vr = [x,y]
+xx,yy = databox(300)
 wnr('su2.dat',ver).reader()
-wnr('su2wtp.dat',vr).reader()
 plt.figure(102)
 plt.grid()
 plt.title('Theoretical versus Computational')
 plt.xlabel('beta')
 plt.ylabel('single plaquette wilson loop')
 plt.errorbar(ver[0],ver[1],yerr = ver[2],fmt = '8',label = 'computational')
-plt.plot(vr[0],vr[1],'-',label='theoritical')
+plt.plot(xx,yy,'-',label='theoritical')
 plt.legend(loc='lower right')
 plt.show()
 
