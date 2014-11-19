@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Nov 19 09:12:45 2014
+
+@author: dibakarsigdel
+"""
+
 
 # -*- coding: utf-8 -*-
 
@@ -417,131 +424,36 @@ class wnr(object):
 
 
 def thermalization(N,l,titr,alpha,flip):
-            NN = Selector(N).count()
             ll = 1
             U = Start(l,N).cold_start()
-            while (ll < titr+1): 
-                    totfailed = 0
+            lx = []
+            savp =[]
+            while (ll < titr+1):
                     for s in range(l):
                         for t in range(l):
                             for r in range(2):
                                   failed, U = Update(U,l,N).link(r,s,t,alpha,flip)
-                                  totfailed = totfailed + failed
-                    ttr = totfailed + (NN*l*l*2)
-                    success = (NN*l*l*2/float(ttr))*100
                     avp = Calculate(U,l,N).avplqt()
-                    print avp, "success=", success, '%'
+                    print ll, avp
+                    lx.append(ll)
+                    savp.append(avp)
                     plt.figure(100)
                     plt.scatter(0.0,0.0)
                     plt.scatter(0.0,1,0)
                     plt.scatter(ll,avp)
                     plt.show()
                     ll = ll+1
-             
-            return  
+            return  lx,savp
 
 
 
 
            
-def Mean_Error(stor_w11):
-        nt = len(stor_w11)
-        ver = [0.0 for k in range(nt)] 
-        mw11 = 0.0
-         
-        for k in range (nt):
-            mw11 = mw11+stor_w11[k]/float(nt)
-        for l in range (nt):
-            ver[l] = (stor_w11[l]-mw11)**2
-        s_error = math.sqrt(sum(ver)/nt**2)
-        return  mw11, s_error
-            
-            
-            
-                    
-def exportstorw(N,l,titr,alpha,flip):
-            sitr = 100
-            storw = [0.0 for k in range(titr-sitr)]
-            ll = 1
-            U = Start(l,N).cold_start()
-            while (ll < titr+1): 
-                    
-                    for s in range(l):
-                        for t in range(l):
-                            for r in range(2):
-                              failed,  U = Update(U,l,N).link(r,s,t,alpha ,flip)
-                    w11 = Calculate(U,l,N).wloop11(3,3)
-                    
-                    print alpha,w11
-                    if ll > sitr:
-                        storw[ll-sitr-1] = w11
-                    ll = ll+1
-             
-            return  storw
-            
 
-def erorbar(N,l,titr):
-            plot_dir = "/Users/dibakarsigdel/Dropbox/Plots/"  
-            data_dir = "/Users/dibakarsigdel/Dropbox/Data/" 
-            Nmax = 28
-            Nvalue = 1
-            dlamda = 0.25
-            x = [0.0 for k in range(Nmax)]
-            y = [0.0 for k in range(Nmax)]
-            y_error = [0.0 for k in range(Nmax)]
-            while Nvalue < Nmax+1:
-                    lamda =  dlamda*Nvalue
-                    alpha = (2.0*N)/lamda
-                    x[Nvalue-1] =  (2.0*N)/alpha
-                    storw = exportstorw(N,l,titr,alpha) 
-                    y[Nvalue-1],y_error[Nvalue-1] = Mean_Error(storw) 
-                    #print x[Nvalue-1],y[Nvalue-1]
-                    plt.figure(104)
-                    plt.xlabel('lambda')
-                    plt.ylabel('W11')
-                    plt.grid()
-                    plt.errorbar(x,y, yerr = y_error, fmt='8')
-                    st = str(N)
-                    plt.savefig(plot_dir + 'plotsu'+st+'.png')
-                    plt.show()
-                    wnr('su'+st+'.dat',[x,y,y_error]).writer()
-                    wnr(data_dir +'su'+st+'.dat',[x,y,y_error]).writer()
-                    Nvalue = Nvalue+1
-            
-            return  
-                                        
                                      
                
                                     
                                                     
-def  w_checker(N,l,titr,flip):
-            lamda =  0.5
-            alpha = (2.0*N)/lamda
-            storw = exportstorw(N,l,titr,alpha,flip) 
-            y,y_error = Mean_Error(storw)
-            plt.figure(104)
-            plt.errorbar(lamda,y,yerr = y_error,fmt ='8')
-            plt.show
-            return
-
-
-def unitarity_check(N,l,titr,alpha,flip):
-            ll = 0
-            U = Start(l,N).hot_start()
-            while (ll < titr+1): 
-                   
-                    for s in range(l):
-                        for t in range(l):
-                            for r in range(2):
-                                  failed, U = Update(U,l,N).link(r,s,t,alpha,flip)
-                                  DU = (U[r][s][t]).getH()
-                                  I = np.dot(DU,U[r][s][t])
-                                  print I
-                    ll = ll+1
-                    return
-
-
-
 
 ###################################################################           
 #Declerations------------------------
@@ -555,7 +467,9 @@ alpha = 10.0
 #------------------------------------------
 #w_checker(N,l,titr,flip)
 #erorbar(N,l,titr,flip)
-thermalization(N,l,titr,alpha,flip)
+lx,savp = thermalization(N,l,titr,alpha,flip)
+ver = [lx,savp]
+wnr('su3t.dat',ver).writer()
 
 
 

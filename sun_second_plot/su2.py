@@ -298,7 +298,7 @@ def exportstorw(l,titr,alpha,flip):
                         for t in range(l):
                             for r in range(2):
                                 U = Update(U,l).link(r,s,t,alpha,flip)
-                    w11 = Calculate(U,l).wloop11(15,15)
+                    w11 = Calculate(U,l).wloop11(5,5)
                     print alpha,w11
                     if ll > sitr:
                         storw[ll-sitr-1] = w11
@@ -310,8 +310,8 @@ def exportstorw(l,titr,alpha,flip):
 def errorbar(N,l,titr,flip):
             plot_dir = "/Users/dibakarsigdel/Dropbox/Plots/"  
             data_dir = "/Users/dibakarsigdel/Dropbox/Data/" 
-            Nmax = 16
-            Nvalue = 16
+            Nmax = 28
+            Nvalue = 1
             dlamda = 0.25
             x = [0.0 for k in range(Nmax)]
             y = [0.0 for k in range(Nmax)]
@@ -340,9 +340,9 @@ def errorbar(N,l,titr,flip):
 ############################################################################           
 #Declerations------------------------
 N = 2                  
-l = 20
-titr = 300
-flip = 1.0
+l = 10
+titr = 1000
+flip = 0.5
 
 #------------------------------------------
 errorbar(N,l,titr,flip)
